@@ -2,6 +2,9 @@ import urllib.request
 import cv2
 import numpy as np
 import os
+import requests
+from PIL import Image
+from io import StringIO
 
 def store_images_set(negative_images_link):
     negative_image_urls = urllib.request.urlopen(negative_images_link,timeout=5).read().decode()
@@ -14,6 +17,8 @@ def store_images_set(negative_images_link):
     for i in negative_image_urls.split('\n'):
         print('Attempting to get img')
         try:
+            img = Image.open(requests.get(i,timeout=5,stream=True).raw)
+            img.save("neg/"+str(pic_num)+".jpg")
             urllib.request.urlretrieve(i, "neg/"+str(pic_num)+".jpg")
             print("reading image")
             img = cv2.imread("neg/"+str(pic_num)+".jpg",cv2.IMREAD_GRAYSCALE)
